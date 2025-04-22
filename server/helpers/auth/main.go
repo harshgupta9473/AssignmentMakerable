@@ -101,9 +101,23 @@ func InsertIntoReceptionist(user models.SignupRequestReceptionist, verificationT
 
 func UpdateUserVerificationToken(userID int64, token string, expiry time.Time) error {
 	query := `UPDATE users SET verification_token = $1, token_expiry = $2 WHERE id = $3`
-	_, err := db.GetDB().Exec(query, token, expiry, userID)
-	return err
+	result, err := db.GetDB().Exec(query, token, expiry, userID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no user found with id=%d", userID)
+	}
+
+	return nil
 }
+
 
 func GetUserByUserId(userID int64) (*models.User, error) {
 	query := `
@@ -201,8 +215,21 @@ func GetTokenExpiryIsVerified(userID int64)(string,time.Time,bool,error){
 }
 
 
-func VerifyUserwithUserID(userID int64)error{
+func VerifyUserwithUserID(userID int64) error {
 	updateQuery := `UPDATE users SET is_verified = TRUE, verified_at = $1 WHERE id = $2`
-	_, err := db.GetDB().Exec(updateQuery, time.Now(), userID)
-	return err
+	result, err := db.GetDB().Exec(updateQuery, time.Now(), userID)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no user found with id=%d", userID)
+	}
+
+	return nil
 }

@@ -22,6 +22,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.Handle("/auth/resendLink", middlewares.AuthMiddleware(http.HandlerFunc(auth.SendVerificationLink))).Methods("GET")   //#apichecked 
 
 	//admin
+	//http://localhost:3001/admin/doctors?approved=true
 	r.Handle("/admin/doctors", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsAdmin(http.HandlerFunc(admin.GetAllDoctorsHandler))))).Methods("GET")
 	r.Handle("/admin/doctors/approve/{doctorID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsAdmin(http.HandlerFunc(admin.ApproveDoctorHandler))))).Methods("GET")
 	r.Handle("/admin/receptionists", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsAdmin(http.HandlerFunc(admin.GetAllReceptionistsHandler))))).Methods("GET")

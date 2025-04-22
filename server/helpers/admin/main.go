@@ -46,9 +46,9 @@ func GetUsersByApproval(approved string,role string) ([]models.User, error) {
 	var err error
 
 	if approved == "true" {
-		query += `AND is_approved = true`
+		query += ` AND is_approved = true`
 	} else if approved == "false" {
-		query += `AND is_approved = false`
+		query += ` AND is_approved = false`
 	}
 
 	rows, err = db.Query(query,role)
@@ -84,6 +84,20 @@ func ApproveUserByRole(userId int64, role string) error {
 		SET is_approved = true
 		WHERE id = $1 AND role = $2
 	`
-	_, err := db.GetDB().Exec(query, userId, role)
-	return err
+	result, err := db.GetDB().Exec(query, userId, role)
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no user found with id=%d and role=%s", userId, role)
+	}
+
+	return nil
 }
+
