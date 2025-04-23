@@ -106,7 +106,7 @@ func DoctorSignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if user already exists
-	exists, err := authHelper.ISUserExistsByEmail(req.Email)
+	existsAsUser, err := authHelper.ISUserExistsByEmail(req.Email)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, utils.APIResponse{
 			Status:  "error",
@@ -115,13 +115,30 @@ func DoctorSignUp(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	if exists {
+	if existsAsUser {
 		utils.WriteJson(w, http.StatusConflict, utils.APIResponse{
-			Status:  "fail",
+			Status:  "error",
 			Message: "User with this email already exists",
 		})
 		return
 	}
+	doctorIDexists,err:=authHelper.IsDoctorIDAlreadyExists(req.DoctorID)
+	if err!=nil{
+		utils.WriteJson(w, http.StatusInternalServerError, utils.APIResponse{
+			Status:  "error",
+			Message: "Failed to check user existence",
+			Error:   err.Error(),
+		})
+		return
+	}
+	if doctorIDexists{
+		utils.WriteJson(w, http.StatusConflict, utils.APIResponse{
+			Status:  "error",
+			Message: "User with this doctorID already exists",
+		})
+		return
+	}
+
 
 	// Hash the password
 	hashedPassword, err := HashPassword(req.Password)

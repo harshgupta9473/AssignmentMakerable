@@ -41,6 +41,25 @@ func ISUserExistsByEmail(email string) (bool, error) {
 	return true, nil
 }
 
+func IsDoctorIDAlreadyExists(doctorID string)(bool,error){
+	query:=`
+	SELECT 1 
+	FROM users as u
+	JOIN doctorgovid as dg ON u.id=dg.user_id
+	WHERE  dg.gov_id=$1
+	AND u.role='doctor'
+	`
+	var exists int
+	err:=db.GetDB().QueryRow(query,doctorID).Scan(&exists)
+	if err!=nil{
+		if err==sql.ErrNoRows{
+			return false,nil
+		}
+		return true,err
+	}
+	return exists==1,nil
+}
+
 // InsertDoctorWithGovID inserts a doctor into both `users` and `doctorgovid` using a transaction.
 func InsertDoctorWithGovID(doctor models.SignupRequestDoctor, verificationToken string, expiryTime time.Time) (int64, error) {
 	conn := db.GetDB()
@@ -176,9 +195,7 @@ func GetUserByUserByEmailAndRole(email string, role string) (*models.User, error
 		&user.TokenExpiry,
 	)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("user not found")
-		}
+		
 		return nil, err
 	}
 
