@@ -10,6 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/harshgupta9473/assignment_makerable/db"
+	"github.com/harshgupta9473/assignment_makerable/db/seed"
 	"github.com/harshgupta9473/assignment_makerable/routes"
 	"github.com/harshgupta9473/assignment_makerable/utils"
 	"github.com/joho/godotenv"
@@ -35,6 +36,7 @@ func main() {
 	}
 	log.Println("Tables created")
 	utils.LoadSecrets()
+	seed.SeedAdminEmail()
 
 	router := mux.NewRouter()
 	routes.RegisterRoutes(router)
