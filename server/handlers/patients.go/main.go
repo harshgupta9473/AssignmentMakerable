@@ -26,12 +26,18 @@ func RegisterPatient(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	dob, err := time.Parse("2006-01-02", patientreq.DOB)
+	if err != nil {
+		fmt.Println("Error parsing DOB:", err)
+		http.Error(w, "Invalid date format. Use YYYY-MM-DD", http.StatusBadRequest)
+		return
+	}
 
 	if patientreq.DoctorDiagnosis == "" {
 		patientreq.DoctorDiagnosis = "NULL"
 	}
 
-	patientID, err := patientsHelper.CreatePatient(patientreq)
+	patientID, err := patientsHelper.CreatePatient(patientreq,dob)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, utils.APIResponse{
 			Status:  "error",
@@ -46,7 +52,7 @@ func RegisterPatient(w http.ResponseWriter, r *http.Request) {
 		FirstName:       patientreq.FirstName,
 		LastName:        patientreq.LastName,
 		Email:           patientreq.Email,
-		DOB:             patientreq.DOB,
+		DOB:             dob,
 		Phone:           patientreq.Phone,
 		Gender:          patientreq.Gender,
 		ComplaintType:   patientreq.ComplaintType,
@@ -127,9 +133,6 @@ func GetAPatientPatientID(w http.ResponseWriter, r *http.Request) {
 		Data:    patient,
 	})
 }
-
-
-
 
 // receptionist
 func GetAllPatients(w http.ResponseWriter, r *http.Request) {

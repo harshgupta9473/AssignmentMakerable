@@ -12,7 +12,7 @@ type Patient struct {
 	Gender          string    `json:"gender"`
 	ComplaintType   string    `json:"complaint_type"`
 	DoctorDiagnosis string    `json:"doctor_diagnosis,omitempty"`
-	DoctorID        int64     `json:"doctor_id"` // Added field
+	DoctorID        int64     `json:"doctor_id,omitempty"` // Added field
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }
@@ -22,7 +22,7 @@ type PatientRequest struct {
 	LastName        string    `json:"last_name"`
 	Email           string    `json:"email"`
 	Phone           string    `json:"phone"`
-	DOB             time.Time `json:"dob"`
+	DOB             string `json:"dob"`
 	Gender          string    `json:"gender"`
 	ComplaintType   string    `json:"complaint_type"`
 	DoctorDiagnosis string    `json:"doctor_diagnosis,omitempty"`

@@ -9,11 +9,11 @@ import (
 	"github.com/harshgupta9473/assignment_makerable/models"
 )
 
-func CreatePatient(patient models.PatientRequest) (int64, error) {
+func CreatePatient(patient models.PatientRequest,dob time.Time) (int64, error) {
 	var id int64
 	query := `INSERT INTO patients (first_name, last_name, email, phone, dob, gender, complaint_type, doctor_diagnosis, doctor_id, created_at, updated_at) 
 			  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`
-	err := db.GetDB().QueryRow(query, patient.FirstName, patient.LastName, patient.Email, patient.Phone, patient.DOB, patient.Gender, patient.ComplaintType, patient.DoctorDiagnosis, patient.DoctorId, time.Now(), time.Now()).Scan(&id)
+	err := db.GetDB().QueryRow(query, patient.FirstName, patient.LastName, patient.Email, patient.Phone, dob, patient.Gender, patient.ComplaintType, patient.DoctorDiagnosis, patient.DoctorId, time.Now(), time.Now()).Scan(&id)
 	if err != nil {
 		return 0, fmt.Errorf("could not create patient: %v", err)
 	}
@@ -40,8 +40,8 @@ func UpdatePatient(patient models.Patient) error {
 
 func GetPatient(id int64) (models.Patient, error) {
 	var patient models.Patient
-	query := `SELECT id, first_name, last_name, email, phone, dob, gender, complaint_type, doctor_diagnosis, created_at, updated_at FROM patients WHERE id = $1 AND is_deleted=false`
-	err := db.GetDB().QueryRow(query, id).Scan(&patient.ID, &patient.FirstName, &patient.LastName, &patient.Email, &patient.Phone, &patient.DOB, &patient.Gender, &patient.ComplaintType, &patient.DoctorDiagnosis, &patient.CreatedAt, &patient.UpdatedAt)
+	query := `SELECT id, first_name, last_name, email, phone, dob, gender, complaint_type, doctor_diagnosis, created_at, updated_at,doctor_id FROM patients WHERE id = $1 AND is_deleted=false`
+	err := db.GetDB().QueryRow(query, id).Scan(&patient.ID, &patient.FirstName, &patient.LastName, &patient.Email, &patient.Phone, &patient.DOB, &patient.Gender, &patient.ComplaintType, &patient.DoctorDiagnosis, &patient.CreatedAt, &patient.UpdatedAt,&patient.DoctorID)
 	if err != nil {
 		return models.Patient{}, fmt.Errorf("could not retrieve patient: %v", err)
 	}
@@ -136,16 +136,26 @@ func SoftDeletePatientByID(patientID int64) error {
 	query := `
 		UPDATE patients
 		SET is_deleted = true, updated_at = $1
-		WHERE id = $2
+		WHERE id = $2 and is_deleted=false
 	`
 
-	_, err := db.GetDB().Exec(query, time.Now(), patientID)
+	result, err := db.GetDB().Exec(query, time.Now(), patientID)
 	if err != nil {
 		return fmt.Errorf("could not soft delete patient: %v", err)
 	}
 
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("could not determine rows affected: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no patient found with the given ID")
+	}
+
 	return nil
 }
+
 
 func GetAllPatients() ([]models.Patient, error) {
 	var patients []models.Patient

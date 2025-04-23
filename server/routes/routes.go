@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/harshgupta9473/assignment_makerable/handlers/admin"
 	"github.com/harshgupta9473/assignment_makerable/handlers/auth"
+	"github.com/harshgupta9473/assignment_makerable/handlers/doctor"
 	patient "github.com/harshgupta9473/assignment_makerable/handlers/patients.go"
 	"github.com/harshgupta9473/assignment_makerable/middlewares"
 )
@@ -38,11 +39,16 @@ func RegisterRoutes(r *mux.Router) {
 
 	// receptionist
             	//patient
-	r.Handle("/receptionist/patients/register", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.RegisterPatient)))))).Methods("POST")
-	r.Handle("/receptionist/patients/", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.GetAllPatients)))))).Methods("GET")
-	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.GetPatientByID)))))).Methods("GET")
-	// r.Handle("/receptionist/patients/{doctoID}/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.GetAllPatientsByDoctorID)))))).Methods("GET")
-	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.UpdatePatientHandler)))))).Methods("PUT")
-	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionist(http.HandlerFunc(patient.DeletePatientById)))))).Methods("DELETE")
+	r.Handle("/receptionist/patients/register", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.RegisterPatient)))))).Methods("POST")
+	r.Handle("/receptionist/patients/", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.GetAllPatients)))))).Methods("GET")
+	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.GetPatientByID)))))).Methods("GET")
+	// r.Handle("/receptionist/patients/{doctoID}/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.GetAllPatientsByDoctorID)))))).Methods("GET")
+	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.UpdatePatientHandler)))))).Methods("PUT")
+	r.Handle("/receptionist/patients/{patientID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(patient.DeletePatientById)))))).Methods("DELETE")
+	//doctor
+	r.Handle("/receptionist/doctors", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(doctor.GetAllApprovedDoctorsDetails)))))).Methods("GET")
+	r.Handle("/receptionist/doctors/{doctorID}", middlewares.AuthMiddleware(middlewares.IsEmailVerified(middlewares.IsReceptionist(middlewares.IsReceptionistApproved(http.HandlerFunc(doctor.GetDoctorById)))))).Methods("GET")
+	
+	
 	
 }
