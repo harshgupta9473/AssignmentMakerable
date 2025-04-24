@@ -19,7 +19,7 @@ https://documenter.getpostman.com/view/34442065/2sB2ixjZDT
 ## Clone the Repository
 
 git clone https://github.com/harshgupta9473/AssignmentMakerable.git
-cd your-project
+cd 
 
 
 ## Environment Setup
