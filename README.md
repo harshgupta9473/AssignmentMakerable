@@ -28,7 +28,13 @@ cd  AssignmentMakerable
 
 Set Up Environment Variables
 Rename .env.example to .env:
-cp .env.example .env
+     
+     cp .env.example .env
+
+Replace placeholder values in .env with your actual credentials.
+
+You can generate a Gmail app password from Google Account Security if 2FA is enabled.
+Add .env to your .gitignore
 
 
 ## Download Go Modules
@@ -37,8 +43,3 @@ go mod tidy
 #RUN
 go run main.go
 
-
-Replace placeholder values in .env with your actual credentials.
-
-You can generate a Gmail app password from Google Account Security if 2FA is enabled.
-Add .env to your .gitignore
